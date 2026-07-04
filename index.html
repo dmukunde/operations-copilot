@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Operations Copilot</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="header-content">
+        <div class="header-text">
+          <h1>Operations Copilot</h1>
+          <p class="subtitle">Enterprise operations command center — focus, workload, and network health for air freight teams.</p>
+          <div id="dataSourceBadge" class="data-source-badge">Local tasks only — load demo for simulated imports</div>
+        </div>
+        <div class="header-actions">
+          <button type="button" id="loadDemoBtn" class="btn btn-secondary">Load Air Freight Demo Day</button>
+          <span class="header-date" id="currentDate"></span>
+        </div>
+      </div>
+    </header>
+
+    <div id="demoToast" class="demo-toast" role="status" aria-live="polite" hidden></div>
+
+    <main class="main">
+      <!-- KPI Dashboard -->
+      <section class="kpi-grid" id="kpiGrid">
+        <div class="kpi-card">
+          <span class="kpi-label">Total Tasks</span>
+          <span class="kpi-value" id="kpiTotal">0</span>
+        </div>
+        <div class="kpi-card kpi-high">
+          <span class="kpi-label">High Priority</span>
+          <span class="kpi-value" id="kpiHigh">0</span>
+        </div>
+        <div class="kpi-card">
+          <span class="kpi-label">Workload Hours</span>
+          <span class="kpi-value" id="kpiHours">0</span>
+        </div>
+        <div class="kpi-card kpi-focus">
+          <span class="kpi-label">Focus Score</span>
+          <span class="kpi-value" id="kpiFocus">—</span>
+        </div>
+        <div class="kpi-card kpi-analytics">
+          <span class="kpi-label">High-Value Work</span>
+          <span class="kpi-value" id="kpiHighValue">—</span>
+        </div>
+        <div class="kpi-card kpi-break">
+          <span class="kpi-label">Break Status</span>
+          <span class="kpi-value kpi-value-sm" id="kpiBreak">Ready</span>
+        </div>
+      </section>
+
+      <!-- Morning Brief -->
+      <section class="card card-morning" id="morningBriefCard">
+        <div class="card-header-row">
+          <h2 class="card-title">Morning Brief</h2>
+          <span class="badge badge-muted" id="briefSource">Awaiting data</span>
+        </div>
+        <div id="morningBrief" class="morning-brief">
+          <p class="empty-state">Load the Air Freight Demo Day to see your simulated morning brief from Outlook, Teams, and CargoWise.</p>
+        </div>
+      </section>
+
+      <!-- Executive Operations Dashboard -->
+      <section class="card card-executive" id="executiveDashboardCard">
+        <div class="card-header-row">
+          <h2 class="card-title">Executive Operations Dashboard</h2>
+          <span class="badge badge-muted" id="execSource">Simulated CargoWise / TMS</span>
+        </div>
+        <div id="executiveDashboard" class="executive-dashboard">
+          <p class="empty-state">Load demo data to view network-wide shipment health and leadership metrics.</p>
+        </div>
+      </section>
+
+      <!-- Command Actions -->
+      <section class="command-bar" id="commandBar">
+        <div class="command-bar-label">Command Actions</div>
+        <div class="command-bar-actions">
+          <button type="button" id="copyBriefBtn" class="btn btn-command" disabled>Copy Operations Brief</button>
+          <button type="button" id="copyCustomerBtn" class="btn btn-command" disabled>Copy Customer Update</button>
+          <button type="button" id="copyEscalationBtn" class="btn btn-command" disabled>Copy Internal Escalation</button>
+          <button type="button" id="markCompleteBtn" class="btn btn-command" disabled>Mark Task Complete</button>
+          <button type="button" id="deferTaskBtn" class="btn btn-command" disabled>Defer Task</button>
+          <button type="button" id="deferLowBtn" class="btn btn-command" disabled>Defer Low-Value Tasks</button>
+        </div>
+      </section>
+
+      <!-- Operations Brief (generated) -->
+      <section class="card card-brief" id="opsBriefCard">
+        <div class="card-header-row">
+          <h2 class="card-title">Operations Brief</h2>
+          <span class="badge badge-muted" id="briefGenerated">Auto-generated</span>
+        </div>
+        <div id="opsBrief" class="ops-brief">
+          <p class="empty-state">Your daily operations briefing generates from active tasks and shipment data.</p>
+        </div>
+      </section>
+
+      <!-- Import Row: Inbox, Schedule, Analytics -->
+      <div class="import-grid">
+        <section class="card">
+          <div class="card-header-row">
+            <h2 class="card-title">Smart Inbox</h2>
+            <span class="badge badge-high" id="inboxCount">0 action</span>
+          </div>
+          <p class="card-subtitle">Action-required emails only (simulated Outlook / Gmail)</p>
+          <div id="smartInbox" class="inbox-list">
+            <p class="empty-state">No action emails.</p>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header-row">
+            <h2 class="card-title">Today's Schedule</h2>
+            <span class="badge badge-muted" id="scheduleCount">0 events</span>
+          </div>
+          <p class="card-subtitle">Meetings & operational blocks (simulated Calendar / Teams)</p>
+          <div id="todaySchedule" class="schedule-list">
+            <p class="empty-state">No schedule loaded.</p>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-header-row">
+            <h2 class="card-title">Productivity Analytics</h2>
+          </div>
+          <p class="card-subtitle">High-value vs low-value planned work</p>
+          <div id="productivityAnalytics" class="analytics-panel">
+            <p class="empty-state">Analytics appear when tasks are loaded.</p>
+          </div>
+          <div id="endOfDayInsight" class="end-of-day-insight" hidden></div>
+        </section>
+      </div>
+
+      <div class="layout-grid">
+        <!-- Left Column -->
+        <div class="column column-left">
+          <section class="card">
+            <h2 class="card-title">Add Task</h2>
+            <form id="taskForm" class="task-form">
+              <div class="form-row">
+                <label for="taskName">Task Name</label>
+                <input type="text" id="taskName" required placeholder="e.g. Resolve customs hold on AWB 176-48291003">
+              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="taskCategory">Category</label>
+                  <select id="taskCategory" required>
+                    <option value="Shipment">Shipment</option>
+                    <option value="Customer">Customer</option>
+                    <option value="Customs">Customs</option>
+                    <option value="Documentation">Documentation</option>
+                    <option value="Meeting">Meeting</option>
+                    <option value="Email">Email</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="taskPriority">Priority</label>
+                  <select id="taskPriority" required>
+                    <option value="High">High</option>
+                    <option value="Medium" selected>Medium</option>
+                    <option value="Low">Low</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="taskMinutes">Est. Time (min)</label>
+                  <input type="number" id="taskMinutes" min="5" step="5" value="30" required>
+                </div>
+                <div class="form-group">
+                  <label for="taskDeadline">Deadline</label>
+                  <input type="datetime-local" id="taskDeadline" required>
+                </div>
+                <div class="form-group">
+                  <label for="taskEnergy">Energy Required</label>
+                  <select id="taskEnergy" required>
+                    <option value="High">High</option>
+                    <option value="Medium" selected>Medium</option>
+                    <option value="Low">Low</option>
+                  </select>
+                </div>
+                <div class="form-group form-group-check">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="taskBlocks">
+                    Blocks other work
+                  </label>
+                </div>
+              </div>
+              <div class="form-row">
+                <label for="taskNotes">Notes</label>
+                <textarea id="taskNotes" rows="2" placeholder="Additional context…"></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary">Add Task</button>
+            </form>
+          </section>
+
+          <section class="card">
+            <div class="card-header-row">
+              <h2 class="card-title">Task Queue</h2>
+              <span class="badge badge-muted" id="taskCount">0 tasks</span>
+            </div>
+            <p class="card-subtitle">Click a task to open Operations Assistant</p>
+            <div id="taskList" class="task-list">
+              <p class="empty-state">No tasks yet. Add a task or load the demo day.</p>
+            </div>
+          </section>
+        </div>
+
+        <!-- Right Column -->
+        <div class="column column-right">
+          <section class="card card-highlight">
+            <h2 class="card-title">Workload Reality Check</h2>
+            <div id="workloadCheck" class="workload-check">
+              <p class="workload-message">Add tasks to see your workload analysis.</p>
+            </div>
+          </section>
+
+          <section class="card">
+            <h2 class="card-title">AI Focus Planner</h2>
+            <p class="card-subtitle">Suggested timeline for today</p>
+            <div id="focusTimeline" class="focus-timeline">
+              <p class="empty-state">Timeline generates from tasks and schedule.</p>
+            </div>
+          </section>
+
+          <section class="card card-break">
+            <h2 class="card-title">Break Intelligence</h2>
+            <div id="breakStatus" class="break-status">
+              <p class="break-message" id="breakMessage">Start a focus session to track your work rhythm.</p>
+              <div class="break-timer" id="breakTimer">00:00</div>
+              <div id="breakRecommendation" class="break-recommendation" hidden></div>
+              <div id="breakIntelligence" class="break-intelligence"></div>
+            </div>
+            <div class="break-actions">
+              <button type="button" id="startFocusBtn" class="btn btn-primary">Start Focus Session</button>
+              <button type="button" id="endFocusBtn" class="btn btn-secondary" disabled>End Focus Session</button>
+              <button type="button" id="takeBreakBtn" class="btn btn-accent" disabled>Take Break</button>
+            </div>
+          </section>
+
+          <section class="card card-assistant">
+            <div class="card-header-row">
+              <h2 class="card-title">Operations Assistant</h2>
+              <span class="badge badge-muted" id="assistantStatus">No task selected</span>
+              <span class="badge badge-ai" id="assistantAiBadge" hidden>AI Analysis</span>
+            </div>
+            <p class="card-subtitle">Intelligent guidance powered by simulated ops intelligence</p>
+            <div id="opsAssistant" class="ops-assistant">
+              <p class="empty-state">Select a task from the queue for AI-assisted guidance, related emails, and draft responses.</p>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <p>Simulated prototype — future integrations: Outlook, Teams, CargoWise, airline systems.</p>
+    </footer>
+  </div>
+
+  <script src="data/analyticsEngine.js"></script>
+  <script src="data/taskIntelligence.js"></script>
+  <script src="data/simulatedData.js"></script>
+  <script src="data/dataAdapter.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
