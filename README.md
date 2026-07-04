@@ -120,27 +120,19 @@ Future AI Stack
 
 ## Dashboard
 
-![Dashboard](images/dashboard.png)
+![Dashboard](dashboard.jpg)
 
 ## Morning Brief
 
-![Morning Brief](images/morning-brief.png)
+![Morning Brief](morning-brief.jpg)
 
 ## Smart Inbox
 
-![Smart Inbox](images/smart-inbox.png)
+![Smart Inbox](smart-inbox.jpg)
 
-## AI Focus Planner
+## Operations Brief
 
-![AI Focus Planner](images/focus-planner.png)
-
-## Break Intelligence
-
-![Break Intelligence](images/break-intelligence.png)
-
-## Operations Assistant
-
-![Operations Assistant](images/operations-assistant.png)
+![Operations Brief](operations-brief.jpg)
 
 ---
 
